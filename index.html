@@ -30,16 +30,14 @@
       <section id="main_content">
         <h1>
 
-<div>
-
 <p>Although the <a href="http://arduino.cc/">Arduino</a> platform is ideal for standalone applications, it really comes to life when interfaced with a PC. Connect Arduino to a personal computer and you instantly add a ton of versatility and processing power to your project.</p>
 
 <p>This tutorial will describe how to use Arduino to control a bank of four independent RC servos with your PC (or Mac, or *nix Box), using a USB cable and a modular Arduino-Python software stack.</p>
 
 <p>The following discussion builds upon concepts presented in two previous articles, <a title="Arduino Serial Servo Control" href="http://teamprincipia.wordpress.com/2007/12/09/arduino-serial-servo-control/">Arduino Serial Servo Control</a> and <a title="Joystick Control of a Servo" href="http://teamprincipia.wordpress.com/2007/12/27/joystick-control-of-a-servo/">Joystick Control of a Servo</a>. As always, comments, critiques, or suggestions for improving or adapting this code are welcome and appreciated.</p>
 
-<h5>
-<a id="project-outline" class="anchor" href="#project-outline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project Outline</h5>
+<h2>
+<a id="project-outline" class="anchor" href="#project-outline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project Outline</h2>
 
 <p>The primary goal for this project was to create a software stack that allows simple and flexible control of multiple servos from any type of Python script.</p>
 
@@ -55,13 +53,13 @@
 
 
 
-<h5>
-<a id="part-i-smoke-mirrors-and-hand-waving" class="anchor" href="#part-i-smoke-mirrors-and-hand-waving" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part I: Smoke, Mirrors, and Hand-Waving</h5>
+<h2>
+<a id="part-i-smoke-mirrors-and-hand-waving" class="anchor" href="#part-i-smoke-mirrors-and-hand-waving" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part I: Smoke, Mirrors, and Hand-Waving</h2>
 
 <p>If you just want to get things up and running quickly, start here. These instructions will get your servos connected and obeying every whim of your PC in no time.</p>
 
-<h6>
-<a id="hardware-setup" class="anchor" href="#hardware-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hardware Setup</h6>
+<h3>
+<a id="hardware-setup" class="anchor" href="#hardware-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hardware Setup</h3>
 
 <p>Hardware for this project consists of an Arduino module, four <a href="http://www.horizonhobby.com/Products/Default.aspx?ProdID=JSP20050">JR Sport ST47 standard servos</a>, and a breadboard to create the circuit.</p>
 
@@ -71,8 +69,8 @@
 
 <p>The simplest way to accomplish this is to create a "bus" bar along one of the breadboard's edges, as shown in the photo above. Simply route the Arduino's 5V and Gnd to a convenient area on the breadboard, and connect all the servos.</p>
 
-<h6>
-<a id="required-software-the-lower-layers" class="anchor" href="#required-software-the-lower-layers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Required Software: The Lower Layers</h6>
+<h3>
+<a id="required-software-the-lower-layers" class="anchor" href="#required-software-the-lower-layers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Required Software: The Lower Layers</h3>
 
 <p>To get the effects seen in the video above, you'll need at least the following two programs. Although this code is designed to control four servos, it also works as-is with <em>fewer</em> servos, and -- with a few modifications -- as many as twelve (or 48 with the <a href="http://arduino.cc/en/Main/ArduinoBoardMega">Arduino Mega</a>!).</p>
 
@@ -123,8 +121,8 @@ Once your hardware is set up and the software is installed, you can test the sys
 
 <p>The <code>servo.move()</code> method takes two arguments, both integers. The first is the servo number you wish to move, 1-4 (or whatever). The second is the commanded angular position of the servo horn, from 0-180 degrees. So, if you want to move Servo #3 fully clockwise (180 degrees), you'll type <code>servo.move(3,180)</code>. Cake, baby!</p>
 
-<h6>
-<a id="optional-software-from-totally-geek-to-totally-chic" class="anchor" href="#optional-software-from-totally-geek-to-totally-chic" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optional Software: From Totally Geek to Totally Chic</h6>
+<h3>
+<a id="optional-software-from-totally-geek-to-totally-chic" class="anchor" href="#optional-software-from-totally-geek-to-totally-chic" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optional Software: From Totally Geek to Totally Chic</h3>
 
 <p>The following scripts are designed to leverage the functionality of the <code>servo.move()</code> method for simple and readable code. Make sure these files reside in the same directory as "servo.py".</p>
 
@@ -165,8 +163,8 @@ Once your hardware is set up and the software is installed, you can test the sys
 
 <p>With any luck, you should now have everything up and running just like in the video!</p>
 
-<h6>
-<a id="adding-servos-when-4-axes-just-isnt-enough" class="anchor" href="#adding-servos-when-4-axes-just-isnt-enough" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding Servos: When 4 Axes Just Isn't Enough</h6>
+<h3>
+<a id="adding-servos-when-4-axes-just-isnt-enough" class="anchor" href="#adding-servos-when-4-axes-just-isnt-enough" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding Servos: When 4 Axes Just Isn't Enough</h3>
 
 <p>You can easily add servos to your project by making a few simple additions to the code. The beauty of this system is that <code>servo.py</code> can remain unchanged, and all of the higher-level Python scripts just need simple alterations to include whatever number of servos you decide to add. This segment will outline how to change the Arduino sketch; changes to the Python scripts will be up to you!</p>
 
@@ -224,8 +222,8 @@ Third, create a new switch case for each additional servo:
 After making changes, be sure to click the "Verify" button on your Arduino software to make sure there are no errors, then upload it to the board. Test your changes by calling the `servo.move()` method from the Python interpreter. That's it!
 
 <a name="joybutton"></a>
-<h6>
-<a id="new-joystick-button-digital-onoff-demo" class="anchor" href="#new-joystick-button-digital-onoff-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>NEW: Joystick Button Digital On/Off Demo</h6>
+<h3>
+<a id="new-joystick-button-digital-onoff-demo" class="anchor" href="#new-joystick-button-digital-onoff-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>NEW: Joystick Button Digital On/Off Demo</h3>
 [Updated 02/18/2011] So, you've got your joystick merrily controlling your servos, but dammit, you want to be able to press a button and magically activate your [insert cool/evil feature here] ... and you just can't figure out how to get started. Well, today is your lucky day. Due to the high demand in the comments field for this feature, I've released updated versions of <code>multijoystick.py</code> (v.0.4) and <code>MultipleSerialServoControl.pde</code> (v.1.1).
 
 This simple little demo will allow you to control Arduino's built-in LED on Pin 13 with your joystick Button 1 (the trigger, hopefully, but your joystick may require code-tweaking). Depressing and holding the trigger should set Pin 13 to HIGH (LED on), and releasing the trigger should set the pin back to LOW (LED off). The <code>multijoystick.py</code> script now has built-in skeleton support for 6 joystick buttons -- which simply means the code structure is there, and you'll be able to see in the Python interpreter window which button PyGame thinks you are pressing.
@@ -292,11 +290,11 @@ case 99:
 
 So basically, the Arduino code just receives the <code>servo.move(99, x)</code> from the serial buffer, looks in the <code>switch</code> block to see if there is, in fact, a Servo #99 (which is an LED in our case), and then executes the code in that block, which sets the output of Pin 13 to either HIGH or LOW. You could conceivably replicate this code for as many digital pins as you like, and a handful of 5V solid-state relays could switch on or off just about any electronic device imaginable. Have fun!
 <div></div>
-<h5>
-<a id="part-ii-getting-down-to-brass-tacks" class="anchor" href="#part-ii-getting-down-to-brass-tacks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part II: Getting Down to Brass Tacks</h5>
+<h2>
+<a id="part-ii-getting-down-to-brass-tacks" class="anchor" href="#part-ii-getting-down-to-brass-tacks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part II: Getting Down to Brass Tacks</h2>
 Next, let’s take a look under the hood to see how it all works. If you're the type that just wants to get things working and damn the details, <strong>STOP HERE</strong>. Otherwise, continue on, and I'll do my best to explain how the code "do what it do."
-<h6>
-<a id="the-problem-set" class="anchor" href="#the-problem-set" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Problem Set</h6>
+<h3>
+<a id="the-problem-set" class="anchor" href="#the-problem-set" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Problem Set</h3>
 Asynchronous serial communication is not perfect. Sometimes there are errors, dropped packets, confusion. Sometimes the mail does <em>not</em> get through. In both of the previous two serial/servo projects, the Arduino expected only one byte from the PC, and in both cases that byte represented a commanded servo position -- and nothing more. If a byte was missed or skipped, it wasn't a big deal, another one was sure to come along, and it was impossible to misinterpret.
 
 This project presents a couple of new challenges. First, we are controlling more than one servo, so the Arduino needs more than one command element for each move. As we've seen above, it needs to know (at least) <em>which</em> servo to move, and <em>how much</em> to move it. Secondly, we have the problem of communication. This time, we're sending <em>two</em> command elements for each move (servo number &amp; position), and these elements are clearly <em>not</em> interchangable. That is, if we want to send <code>servo.move(4,90)</code>, we need to make sure that Arduino knows that the '4' means "Servo #4" and the '90' means "90 degrees."
@@ -311,8 +309,8 @@ Tom Igoe's article, "<a href="http://www.tigoe.net/pcomp/code/communication/inte
 The Arduino's <code>Serial.read()</code> function reads one byte of data at a time from its <em>serial buffer</em>. Think of the serial buffer as a mailbox. It's a small (128 bytes) area of memory where incoming serial messages are stashed until the Arduino is ready to read them. Every character we send from the PC to Arduino is one byte. So, while we could send the Arduino something very unambiguous like, "Yeah, hi, Arduino, it's the Linux Box again. What's happening? If you could go ahead and move Servo #4 to the 90-degree position, that would be great. Thaaanks," (163 bytes) it's obviously better if we can come up with something a little more terse.
 
 However, as we've seen, if we just send over the characters '4', '9', and '0' -- remember, each character is a byte -- the Arduino might get confused. This problem is amplified when more commands start stacking up in the buffer. Let's say now we command <code>servo.move(2,180)</code> and <code>servo.move(3,120)</code>. Now the buffer should hold {4,9,0,2,1,8,0,3,1,2,0}, except--OOPS!--one of the bytes got dropped along the way, so now it holds {4,9,0,2,1,8,3,1,2,0}. "Wait, which servo did you want me to move?" You can clearly see a problem developing.
-<h6>
-<a id="solution-data-packets-and-start-bytes" class="anchor" href="#solution-data-packets-and-start-bytes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Solution: Data Packets and Start Bytes</h6>
+<h3>
+<a id="solution-data-packets-and-start-bytes" class="anchor" href="#solution-data-packets-and-start-bytes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Solution: Data Packets and Start Bytes</h3>
 Luckily, part of the solution is handled in the way Arduino communicates. Arduino uses <a href="http://en.wikipedia.org/wiki/ASCII">ASCII encoding</a> to represent alphanumeric characters. Each character sent over the wire is converted to the binary equivalent of a decimal value from 0 to 255. [See this <a href="http://www.arduino.cc/en/Reference/ASCIIchart">conversion chart</a> for specifics.]
 
 So, for example, if we send over the character 'A', Arduino recognizes this as its decimal value, '65'. We won't get too deep into this concept except to say that the implementation is *reat for our application, because as long as the values we're sending are less than 255, they'll fit neatly into one byte. Since the largest value we send is 180, we only have to send two bytes per command.
@@ -381,8 +379,8 @@ What to use as a startbyte? Well, we're only using the values from 0-180 as eith
 
 <p>Perfect accuracy is not required.</p>
 
-<h6>
-<a id="writing-the-code" class="anchor" href="#writing-the-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Writing the Code</h6>
+<h3>
+<a id="writing-the-code" class="anchor" href="#writing-the-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Writing the Code</h3>
 
 <p>Very briefly, let's look at how the above concepts are implemented in both the Python and Arduino software.</p>
 
@@ -461,13 +459,13 @@ void loop()
 
 <p> </p>
 
-<h5>
-<a id="whew-were-done" class="anchor" href="#whew-were-done" aria-hidden="true"><span class="octicon octicon-link"></span></a>Whew! We're Done.</h5>
+<h2>
+<a id="whew-were-done" class="anchor" href="#whew-were-done" aria-hidden="true"><span class="octicon octicon-link"></span></a>Whew! We're Done.</h2>
 
 <p>Well, if you've made it this far, congratulations: you're totally insane. I hope the above dissertation helps at least one person better grasp these concepts, since it took me across many web pages and into several late nights to find the answers. Good luck!</p>
 
-<h5>
-<a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h5>
+<h2>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h2>
 
 <ol>
 <li>Tom Igoe, <em><a href="http://www.oreilly.com/catalog/9780596510510/">Making Things Talk: Practical Methods for Connecting Physical Objects</a></em>
