@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Arduino-Python 4-Axis Servo Control by briandwendt</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Arduino-Python 4-Axis Servo Control</h1>
+        <h2>Control four (or more) RC servos with Arduino and Python.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/briandwendt/Arduino-Python-4-Axis-Servo/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/briandwendt/Arduino-Python-4-Axis-Servo/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/briandwendt/Arduino-Python-4-Axis-Servo" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="arduino-python-4-axis-servo" class="anchor" href="#arduino-python-4-axis-servo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Arduino-Python-4-Axis-Servo</h1>
+
+<div>
+<div><strong>Other Super-cool Open Source Projects based on this Code</strong></div>
+(1) <a href="http://fab.cba.mit.edu/classes/MIT/961.09/projects/active_extrusion/">MIT's Fab Lab Active Extrusion Machine</a> (2) <a href="http://dtostillwell.com/?p=215">Pan/Tilt Webcam Robot</a> (3) <a href="http://auzieman.blogspot.com/2010/08/testing-code-style-blocks.html">Walking Biped Robot</a> (4) <a href="http://www.somethingrisky.com/?p=38">Wireless XBee Tank-Steer Rover</a> (5) <a href="https://github.com/pkropf/exuro">Exuro Kinect/Arduino Gimbaling Robot Eyes</a> (6) <a href="http://www.westy92.com/?p=24">Wiimote-Controlled Webcam Platform</a> (7) <a href="http://sites.google.com/site/airwavershr/Home/atombot">AtomBot Netbook Rover</a> (8) <a href="http://negativeacknowledge.com/2010/06/automated-nerf-turret/">Automated NERF Vulcan "Portal" Turret</a> (9) <a href="http://blog.makezine.com/archive/2008/12/maya-and-arduino-control.html">Maya 3D/Arduino/Python Servo Control</a> (10) <a href="http://blog.mawqey.com/2011/01/24/experimenting-with-android-and-arduino/">Android/Arduino LED Light Bar</a>
+<div>Add a link to your project in the comments below!</div>
+</div>
+
+<p>[blip.tv <a href="http://blip.tv/play/wkew8g0C">http://blip.tv/play/wkew8g0C</a> width="648" height="380"]</p>
+
+<p><img src="http://teamprincipia.files.wordpress.com/2008/03/spacer.png" alt="spacer" width="600" height="1"></p>
+
+<p>Although the <a href="http://arduino.cc/">Arduino</a> platform is ideal for standalone applications, it really comes to life when interfaced with a PC. Connect Arduino to a personal computer and you instantly add a ton of versatility and processing power to your project.</p>
+
+<p>This tutorial will describe how to use Arduino to control a bank of four independent RC servos with your PC (or Mac, or *nix Box), using a USB cable and a modular Arduino-Python software stack.</p>
+
+<p>The following discussion builds upon concepts presented in two previous articles, <a title="Arduino Serial Servo Control" href="http://teamprincipia.wordpress.com/2007/12/09/arduino-serial-servo-control/">Arduino Serial Servo Control</a> and <a title="Joystick Control of a Servo" href="http://teamprincipia.wordpress.com/2007/12/27/joystick-control-of-a-servo/">Joystick Control of a Servo</a>. As always, comments, critiques, or suggestions for improving or adapting this code are welcome and appreciated.</p>
+
+<h5>
+<a id="project-outline" class="anchor" href="#project-outline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project Outline</h5>
+
+<p>The primary goal for this project was to create a software stack that allows simple and flexible control of multiple servos from any type of Python script.</p>
+
+<p>The solution has two basic components: (1) an Arduino sketch that waits for serial input from a connected PC, then moves each servo to its commanded position, and; (2) a Python module on the PC that opens the serial connection and formats the data packets expected by the Arduino.</p>
+
+<p>Any other Python program written to sit on top of these two layers need not worry about the messy details of serial communication, but rather can just say something like, "Move servo #2 to 90 degrees." Or, more precisely:</p>
+
+<pre><code>servo.move(2,90)</code></pre>
+
+<p> </p>
+
+<p>Easy, right? Let's get started.</p>
+
+
+
+<h5>
+<a id="part-i-smoke-mirrors-and-hand-waving" class="anchor" href="#part-i-smoke-mirrors-and-hand-waving" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part I: Smoke, Mirrors, and Hand-Waving</h5>
+
+<p>If you just want to get things up and running quickly, start here. These instructions will get your servos connected and obeying every whim of your PC in no time.</p>
+
+<h6>
+<a id="hardware-setup" class="anchor" href="#hardware-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hardware Setup</h6>
+
+<p>Hardware for this project consists of an Arduino module, four <a href="http://www.horizonhobby.com/Products/Default.aspx?ProdID=JSP20050">JR Sport ST47 standard servos</a>, and a breadboard to create the circuit.</p>
+
+<p>The servos each have three wires: Ground (brown), Power (red) and Control (yellow). Each of the Control wires will connect to a different digital pin on the Arduino board (pins 2 through 5 in our setup), and <em>all</em> of the Power and Ground wires will need to connect somehow to the 5V and Gnd pins.</p>
+
+<p><a href="http://teamprincipia.files.wordpress.com/2008/04/arduino-breadboard.jpg"><img src="http://teamprincipia.files.wordpress.com/2008/04/arduino-breadboard.jpg?w=300" alt="arduino-breadboard" width="300" height="238"></a></p>
+
+<p>The simplest way to accomplish this is to create a "bus" bar along one of the breadboard's edges, as shown in the photo above. Simply route the Arduino's 5V and Gnd to a convenient area on the breadboard, and connect all the servos.</p>
+
+<h6>
+<a id="required-software-the-lower-layers" class="anchor" href="#required-software-the-lower-layers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Required Software: The Lower Layers</h6>
+
+<p>To get the effects seen in the video above, you'll need at least the following two programs. Although this code is designed to control four servos, it also works as-is with <em>fewer</em> servos, and -- with a few modifications -- as many as twelve (or 48 with the <a href="http://arduino.cc/en/Main/ArduinoBoardMega">Arduino Mega</a>!).</p>
+
+<p><strong>Download the code:</strong></p>
+
+<div>
+
+<a href="https://raw.github.com/aeropunk/Arduino-Python-4-Axis-Servo/master/MultipleSerialServoControl.pde"><b> MultipleSerialServoControl.pde</b></a>: This Arduino sketch uses the Arduino <a href="http://arduino.cc/en/Reference/Servo">Servo library</a> to make alterations very simple. You can control up to 12 servos using this code (with modifications) and most Arduino boards, or <i>up to 48 servos</i> using an Arduino Mega! (See the code comments for specific details.) This code should also solve most of the servo "jitter" issues mentioned in the comments below. Copy and paste this code into your Arduino software and upload it to the board.
+
+<a href="https://raw.github.com/aeropunk/Arduino-Python-4-Axis-Servo/master/servo.py"><b>servo.py</b></a>: This is the Python module which talks directly to the above Arduino sketch. This script requires the <a href="http://sourceforge.net/projects/pyserial/">pyserial</a> module, available from Sourceforge. Save this script on your PC wherever you like, just be sure to name it "servo.py".
+
+</div>
+
+<div>
+<b>Important!</b> The code presented here has been tested and verified to work on Windows, Mac, and Linux using <a href="http://www.python.org/download/releases/2.6.6/">Python 2.6</a>, <a href="http://pypi.python.org/pypi/pyserial">PySerial 2.5</a> for Python 2.x, and <a href="http://www.pygame.org/download.shtml">PyGame 1.9.1</a> for Python 2.6. Python 3.x is not supported. For users with 64-bit systems, the 32-bit version of all software is recommended. Other versions of Python will probably work, but getting all the modules working together is up to you.<b>New to Python?</b> Welcome! Python is a versatile and fun language to learn, and it's used by just about everyone, from newbies to NASA! Check out the <a href="http://wiki.python.org/moin/BeginnersGuide">Beginner's Guide</a> to get your bearings, or get the full skinny at <a href="http://python.org/">python.org</a>.
+
+</div>
+
+<p><strong>Customize the code:</strong></p>
+
+<p>Depending on your computer system and Arduino hardware setup, you may need to make a few modifications to the code.</p>
+
+<p><strong>Arduino:</strong> In the "MultipleSerialServoContro" sketch, take note of the following variables and make adjustments as necessary for your setup. See <a title="Arduino Serial Servo Control" href="http://teamprincipia.wordpress.com/2007/12/09/arduino-serial-servo-control/">Arduino Serial Servo Control</a> for more details regarding the <code>minPulse</code> and <code>maxPulse</code> variables. (If you've got standard RC servos attached to pins 2-5, you probably won't have to change anything.)</p>
+
+<pre><code>// Common servo setup values
+int minPulse = 600;   // minimum servo position, us (microseconds)
+int maxPulse = 2400;  // maximum servo position, us
+
+// Attach each Servo object to a digital pin
+servo1.attach(2, minPulse, maxPulse);
+servo2.attach(3, minPulse, maxPulse);
+servo3.attach(4, minPulse, maxPulse);
+servo4.attach(5, minPulse, maxPulse);
+</code></pre>
+ 
+
+<strong>Python:</strong> In the "servo.py" script, you'll most likely need to change the value of the `usbport` variable, which tells Python how to find your Arduino (On Windows, it'll be something like 'COM5'. On a Mac, '/dev/tty.usbserial-xxxxx'. On Linux, '/dev/ttyUSB0'.). Try running <code>ls /dev/tty*</code> from a Mac or Linux terminal for a list of available ports.
+
+<strong>Test the code:</strong>
+
+Once your hardware is set up and the software is installed, you can test the system's basic functionality from the <a href="http://docs.python.org/tutorial/interpreter.html">Python interactive interpreter</a> or "shell," like so:
+<pre><code>~/path/to/servo.py$ python
+&gt;&gt;&gt; import servo
+&gt;&gt;&gt; servo.move(2,150)</code>
+</pre>
+
+<p> </p>
+
+<p>The <code>servo.move()</code> method takes two arguments, both integers. The first is the servo number you wish to move, 1-4 (or whatever). The second is the commanded angular position of the servo horn, from 0-180 degrees. So, if you want to move Servo #3 fully clockwise (180 degrees), you'll type <code>servo.move(3,180)</code>. Cake, baby!</p>
+
+<h6>
+<a id="optional-software-from-totally-geek-to-totally-chic" class="anchor" href="#optional-software-from-totally-geek-to-totally-chic" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optional Software: From Totally Geek to Totally Chic</h6>
+
+<p>The following scripts are designed to leverage the functionality of the <code>servo.move()</code> method for simple and readable code. Make sure these files reside in the same directory as "servo.py".</p>
+
+<ul>
+<ul>
+    <li>
+<a href="https://github.com/aeropunk/Arduino-Python-4-Axis-Servo/blob/master/servodance.py"><b>servodance.py</b></a>: A cascading effect that feels like watching a quarter spiral down one of those funnel-shaped wishing wells.</li>
+</ul>
+
+<p></p>
+</ul>
+ 
+
+<ul>
+<ul>
+    <li>
+<a href="https://github.com/aeropunk/Arduino-Python-4-Axis-Servo/blob/master/servorandom.py"><b>servorandom.py</b></a>: The final servo sequence seen in the video, with individual servos moving to random positions and then waving "goodbye" in unison.</li>
+</ul>
+
+<p></p>
+</ul>
+ 
+
+<ul>
+<ul>
+    <li>
+<a href="https://github.com/aeropunk/Arduino-Python-4-Axis-Servo/blob/master/servomarch.py"><b>servomarch.py</b></a>: This one's not in the video, but it's a fun script to test individual and simultaneous movement of multiple servos. Just set the number of servos to march (default is 4), and send them off!</li>
+</ul>
+
+<p></p>
+</ul>
+ 
+
+<ul>
+    <li>
+<a href="https://github.com/aeropunk/Arduino-Python-4-Axis-Servo/blob/master/multijoystick.py"><b>multijoystick.py</b></a>: Allows joystick control of four servos, with each joystick axis controlling a single servo. This script is the most complex, so try getting the first three working, then graduate to this one -- it's easier to troubleshoot problems that way. [Note: This script also requires installation of the <a href="http://www.pygame.org/">pygame</a> module.]</li>
+</ul>
+
+<p>With any luck, you should now have everything up and running just like in the video!</p>
+
+<h6>
+<a id="adding-servos-when-4-axes-just-isnt-enough" class="anchor" href="#adding-servos-when-4-axes-just-isnt-enough" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding Servos: When 4 Axes Just Isn't Enough</h6>
+
+<p>You can easily add servos to your project by making a few simple additions to the code. The beauty of this system is that <code>servo.py</code> can remain unchanged, and all of the higher-level Python scripts just need simple alterations to include whatever number of servos you decide to add. This segment will outline how to change the Arduino sketch; changes to the Python scripts will be up to you!</p>
+
+<p>There are three places in the <code>MultipleSerialServoControl</code> sketch where you'll need to make additions, if you want to control more than four servos. Each section of the code contains the comment "TO ADD SERVOS:" followed by a suggestion on what to add.</p>
+
+<p>First, add a Servo object for each additional servo:</p>
+
+<pre><code>// Create a Servo object for each servo
+Servo servo1;
+Servo servo2;
+Servo servo3;
+Servo servo4;
+// TO ADD SERVOS:
+//   Servo servo5;
+//   etc...
+</code></pre>
+ 
+
+Second, assign a digital pin to each additional servo:
+<pre><code>  // Attach each Servo object to a digital pin
+  servo1.attach(2, minPulse, maxPulse);
+  servo2.attach(3, minPulse, maxPulse);
+  servo3.attach(4, minPulse, maxPulse);
+  servo4.attach(5, minPulse, maxPulse);
+  // TO ADD SERVOS:
+  //   servo5.attach(YOUR_PIN, minPulse, maxPulse);
+  //   etc...
+</code></pre>
+ 
+
+Third, create a new switch case for each additional servo:
+<pre><code>      // Assign new position to appropriate servo
+      switch (servo) {
+        case 1:
+          servo1.write(pos);    // move servo1 to 'pos'
+          break;
+        case 2:
+          servo2.write(pos);
+          break;
+        case 3:
+          servo3.write(pos);
+          break;
+        case 4:
+          servo4.write(pos);
+          break;
+   // TO ADD SERVOS:
+   //     case 5:
+   //       servo5.write(pos);
+   //       break;
+   // etc...
+      }
+</code></pre>
+ 
+
+After making changes, be sure to click the "Verify" button on your Arduino software to make sure there are no errors, then upload it to the board. Test your changes by calling the `servo.move()` method from the Python interpreter. That's it!
+
+<a name="joybutton"></a>
+<h6>
+<a id="new-joystick-button-digital-onoff-demo" class="anchor" href="#new-joystick-button-digital-onoff-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>NEW: Joystick Button Digital On/Off Demo</h6>
+[Updated 02/18/2011] So, you've got your joystick merrily controlling your servos, but dammit, you want to be able to press a button and magically activate your [insert cool/evil feature here] ... and you just can't figure out how to get started. Well, today is your lucky day. Due to the high demand in the comments field for this feature, I've released updated versions of <code>multijoystick.py</code> (v.0.4) and <code>MultipleSerialServoControl.pde</code> (v.1.1).
+
+This simple little demo will allow you to control Arduino's built-in LED on Pin 13 with your joystick Button 1 (the trigger, hopefully, but your joystick may require code-tweaking). Depressing and holding the trigger should set Pin 13 to HIGH (LED on), and releasing the trigger should set the pin back to LOW (LED off). The <code>multijoystick.py</code> script now has built-in skeleton support for 6 joystick buttons -- which simply means the code structure is there, and you'll be able to see in the Python interpreter window which button PyGame thinks you are pressing.
+
+The new joystick code also adds support for the "Hat" or POV Switch. The hat switch toggles L/R/UP/DN and then centers, and the code supports events for each position. The included demo will drive servo #4 full left with a "hat left" command, full right with a "hat right" command, and then center the servo when the hat springs back to center -- one possible method to control the "pan" function of a pan/tilt platform, for example.
+
+Here are a couple of snippets from the new <code>multijoystick.py</code> script:
+<pre><code>    # Assign actions for Button DOWN events
+    elif e.type == pygame.JOYBUTTONDOWN:
+        # Button 1 (trigger)
+        if (e.dict['button'] == 0):
+            print "Trigger Down"
+            # Set pin 13 LED to HIGH for digital on/off demo
+            servo.move(99, 180)
+        # Button 2
+        if (e.dict['button'] == 1):
+            print "Button 2 Down"
+</code></pre>
+ 
+<pre><code>    # Assign actions for Button UP events
+    elif e.type == pygame.JOYBUTTONUP:
+        # Button 1 (trigger)
+        if (e.dict['button'] == 0):
+            print "Trigger Up"
+            # Set pin 13 LED to LOW for digital on/off demo
+            servo.move(99, 0)
+        # Button 2
+        if (e.dict['button'] == 1):
+            print "Button 2 Up"
+</code></pre>
+ 
+
+I know, I know, you're saying, "What's with this <code>servo.move(99, 180)</code> crap? I don't even <em>have</em> 99 servos!" Well, since the Arduino sketch is already listening for a servo number and position, it's a trivial matter to just "pretend" that our LED (or relay, or nerf turret, etc.) is just another servo. And since you're unlikely to have more than fifty servos in your project, 99 seemed like a safe number to pick. The servo positions -- in this case 180 and 0 -- simply substitute for "on" and "off" respectively, but you could easily come up with your own communication scheme.
+
+Here are some snippets from the new Arduino sketch that were added to accommodate the LED demo:
+
+In the header, with the other variable assignments:
+<pre><code>// LED on Pin 13 for digital on/off demo
+int ledPin = 13;
+int pinState = LOW;
+</code></pre>
+ 
+
+In the <code>void setup()</code> block:
+<pre><code>// LED on Pin 13 for digital on/off demo
+pinMode(ledPin, OUTPUT);
+</code></pre>
+ 
+
+In the <code>switch(servo)</code> block:
+<pre><code>// LED on Pin 13 for digital on/off demo
+case 99:
+  if (pos == 180) {
+    if (pinState == LOW) { pinState = HIGH; }
+    else { pinState = LOW; }
+  }
+  if (pos == 0) {
+    pinState = LOW;
+  }
+  digitalWrite(ledPin, pinState);
+  break;
+</code></pre>
+ 
+
+So basically, the Arduino code just receives the <code>servo.move(99, x)</code> from the serial buffer, looks in the <code>switch</code> block to see if there is, in fact, a Servo #99 (which is an LED in our case), and then executes the code in that block, which sets the output of Pin 13 to either HIGH or LOW. You could conceivably replicate this code for as many digital pins as you like, and a handful of 5V solid-state relays could switch on or off just about any electronic device imaginable. Have fun!
+<div></div>
+<h5>
+<a id="part-ii-getting-down-to-brass-tacks" class="anchor" href="#part-ii-getting-down-to-brass-tacks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Part II: Getting Down to Brass Tacks</h5>
+Next, let’s take a look under the hood to see how it all works. If you're the type that just wants to get things working and damn the details, <strong>STOP HERE</strong>. Otherwise, continue on, and I'll do my best to explain how the code "do what it do."
+<h6>
+<a id="the-problem-set" class="anchor" href="#the-problem-set" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Problem Set</h6>
+Asynchronous serial communication is not perfect. Sometimes there are errors, dropped packets, confusion. Sometimes the mail does <em>not</em> get through. In both of the previous two serial/servo projects, the Arduino expected only one byte from the PC, and in both cases that byte represented a commanded servo position -- and nothing more. If a byte was missed or skipped, it wasn't a big deal, another one was sure to come along, and it was impossible to misinterpret.
+
+This project presents a couple of new challenges. First, we are controlling more than one servo, so the Arduino needs more than one command element for each move. As we've seen above, it needs to know (at least) <em>which</em> servo to move, and <em>how much</em> to move it. Secondly, we have the problem of communication. This time, we're sending <em>two</em> command elements for each move (servo number &amp; position), and these elements are clearly <em>not</em> interchangable. That is, if we want to send <code>servo.move(4,90)</code>, we need to make sure that Arduino knows that the '4' means "Servo #4" and the '90' means "90 degrees."
+
+Tom Igoe's article, "<a href="http://www.tigoe.net/pcomp/code/communication/interpreting-serial-data-bytes">Interpreting Serial Data</a>," contains an excellent discussion of some of the problems involved in serial communication, and lists several issues that need to be addressed in every project, namely:
+
+1. How many bytes am I sending? Am I receiving the same number?
+2. Did I get the bytes in the right order?
+3. Are my bytes part of a larger variable?
+4. Is my data getting garbled in transit?
+
+The Arduino's <code>Serial.read()</code> function reads one byte of data at a time from its <em>serial buffer</em>. Think of the serial buffer as a mailbox. It's a small (128 bytes) area of memory where incoming serial messages are stashed until the Arduino is ready to read them. Every character we send from the PC to Arduino is one byte. So, while we could send the Arduino something very unambiguous like, "Yeah, hi, Arduino, it's the Linux Box again. What's happening? If you could go ahead and move Servo #4 to the 90-degree position, that would be great. Thaaanks," (163 bytes) it's obviously better if we can come up with something a little more terse.
+
+However, as we've seen, if we just send over the characters '4', '9', and '0' -- remember, each character is a byte -- the Arduino might get confused. This problem is amplified when more commands start stacking up in the buffer. Let's say now we command <code>servo.move(2,180)</code> and <code>servo.move(3,120)</code>. Now the buffer should hold {4,9,0,2,1,8,0,3,1,2,0}, except--OOPS!--one of the bytes got dropped along the way, so now it holds {4,9,0,2,1,8,3,1,2,0}. "Wait, which servo did you want me to move?" You can clearly see a problem developing.
+<h6>
+<a id="solution-data-packets-and-start-bytes" class="anchor" href="#solution-data-packets-and-start-bytes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Solution: Data Packets and Start Bytes</h6>
+Luckily, part of the solution is handled in the way Arduino communicates. Arduino uses <a href="http://en.wikipedia.org/wiki/ASCII">ASCII encoding</a> to represent alphanumeric characters. Each character sent over the wire is converted to the binary equivalent of a decimal value from 0 to 255. [See this <a href="http://www.arduino.cc/en/Reference/ASCIIchart">conversion chart</a> for specifics.]
+
+So, for example, if we send over the character 'A', Arduino recognizes this as its decimal value, '65'. We won't get too deep into this concept except to say that the implementation is *reat for our application, because as long as the values we're sending are less than 255, they'll fit neatly into one byte. Since the largest value we send is 180, we only have to send two bytes per command.
+
+Now, if you've looked at the ASCII conversion chart, you'll recognize that doing this every time you want to send a command would be a real pain. Also, trying to teach Python this chart would take up a lot of unnecessary code. Thankfully, this problem is already solved for us with Python's <code>chr()</code> function. Wrap any decimal value from 0-255 in <code>chr()</code>, and you get back its ASCII equivalent. A few examples:
+<pre><code>~$ python
+&gt;&gt;&gt; chr(65)
+'A'
+&gt;&gt;&gt; chr(110)
+'n'
+&gt;&gt;&gt; chr(13)
+'r'
+&gt;&gt;&gt; chr(9)
+'t'</code></pre>
+ 
+
+You get the idea, but notice that ASCII doesn't just represent letters and numbers, but also symbols and other "control" or "non-printing" characters like line-feeds, returns, and tabs.
+
+So, now if we want to send <code>servo.move(4,90)</code>, we only need <em>two</em> bytes, the ASCII equivalents of '4' and '90', represented in Python as <code>chr(4)</code> and <code>chr(90)</code>, and interpreted by the Arduino sketch as, once again, simply '4' and '90'. Easy! [Seriously, if your brain explodes at this point, or you're bleeding from the ears, it's understandable. I don't like it any more than you do, but stick with me, it'll all work out neatly in the end.]
+
+<strong>Packets, Headers, and Payloads</strong>
+
+Okay, great, now instead of just digits in Arduino's serial buffer, we have meaningful values. Part of the problem is solved, but we still haven't addressed the issue of dropped or missing bytes. That is, how will the Arduino know that a '4' is "Servo #4" and not "4 degrees" when pulling values out of a crowded buffer like {4,90,2,180,3,0,1,110} ?
+
+The answer is <a href="http://computer.howstuffworks.com/question525.htm">data packets</a>. Very simply, instead of just sending a long string of numbers to Arduino, we'll send a very specific ordered message, a <em>packet</em> of values, that is intended to be read and interpreted <strong>as a whole</strong> and <strong>in order</strong>, or else discarded completely.
+
+Now, the structure of a packet can be as simple or as complex as we need it to be, as you might have noticed if you followed that last link. But all we really need is some means of ensuring that Arduino doesn't confuse one value for another.
+
+Essentially, our Python script needs to tell Arduino three things:
+
+1. Here comes a new servo command.
+2. Servo number to move.
+3. Commanded servo position.
+
+We've already been sending the last two elements, the servo number and position. Here, we're adding a third element, which we'll call the <em>header</em> or the start byte. Our header, like the rest of the data in our packet, will be just one byte long, and contain no real information other than the conceptual message, "I am a header."
+
+The <em>order</em> of this message is important. Every packet sent over the wire, or read from the serial buffer, will now have the following format:
+<pre><code>(Header, Servo Number, Servo Position)</code></pre>
+ 
+
+or, more tersely:
+<pre><code>(startbyte, servo, angle)</code></pre>
+ 
+
+What to use as a startbyte? Well, we're only using the values from 0-180 as either our Servo Number or Servo Postion. Any value from 181 to 255 would be unique. We'll use '255' just to make it obvious. So, every packet will now look something like one of the following:
+<pre><code>    (255, 1, 90)
+    (255, 2, 180)
+    (255, 3, 0)</code>
+</pre>
+
+<p> </p>
+
+<p>And the Arduino's serial buffer would look something like:</p>
+
+<pre><code>{255,1,90,255,2,180,255,3,0}</code></pre>
+
+<p> </p>
+
+<p>Now, instead of reading byte after byte and hoping for the best, Arduino will <em>wait</em> until a minimum of three bytes arrive in the buffer, and then read the first byte to determine whether or not it is, in fact, a header (255). If it's not, Arduino skips that value, and moves on to the next byte without touching the servos. When it finally sees a header, Arduino continues reading the next two bytes, in order, and assigning them to the Servo Number and the Servo Position, respectively. If either of <em>those</em> two values is '255', Arduino assumes something is wrong, and skips everything until it reads a new header.</p>
+
+<p><strong>Side Note: Authoritarian Flow Control</strong></p>
+
+<p>"Now just a minute!" you're saying. "If that is the case, then <em>some</em> of the commands Python sends to the Arduino will be totally ignored!" And you're right. This method of serial flow control is definitely one-way, with no error-checking. Other methods, such as "call-and-response" or "<a href="http://itp.nyu.edu/physcomp/Labs/Serial">handshaking</a>" are much better at ensuring accuracy, since there's a back-and-forth arrangement that can call for data to be re-sent in the event of dropped packets. But the two-way protocol this method requires is <em>much</em> slower.</p>
+
+<p>We have to make an engineering decision. In our application, which is more important, accuracy or quick response? It depends on exactly how you are using the servos, but if you consider say, a joystick-controlled robot or RC vehicle application, then clearly an immediate response and quick visual feedback is preferable to perfect accuracy. If you command "turn right" with a joystick, and your vehicle doesn't respond appropriately, you'll just instinctively add more right stick input.</p>
+
+<p>Perfect accuracy is not required.</p>
+
+<h6>
+<a id="writing-the-code" class="anchor" href="#writing-the-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Writing the Code</h6>
+
+<p>Very briefly, let's look at how the above concepts are implemented in both the Python and Arduino software.</p>
+
+<p><strong>Python Implementation</strong></p>
+
+<p>Whenever we call the <code>servo.move()</code> method, the Python script <code>servo.py</code> handles the serial communication details using the <code>pyserial</code> module, and formats the arguments into the data packet outlined above. The bare-bones version looks like this:</p>
+
+<pre><code>#!/usr/bin/env python
+
+import serial
+usbport = '/dev/ttyUSB0'
+ser = serial.Serial(usbport, 9600, timeout=1)
+
+def move(servo, angle):
+    if (0 &lt;= angle &lt;= 180):
+        ser.write(chr(255))
+        ser.write(chr(servo))
+        ser.write(chr(angle))
+    else:
+        pass</code>
+</pre>
+
+<p> </p>
+
+<p><strong>Arduino Implementation</strong></p>
+
+<p>Arduino opens its own serial connection, waits for at least three bytes to fill the buffer, then starts reading:</p>
+
+<pre><code>/** MultipleSerialServoControl.pde (bare bones) **/
+
+void setup() {
+  // Open the serial connection, 9600 baud
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  // Wait for serial input (min 3 bytes in buffer)
+  if (Serial.available() &gt; 2) {
+    // Read the first byte
+    startbyte = Serial.read();
+    // If it's really the startbyte (255) ...
+    if (startbyte == 255) {
+      // ... then get the next two bytes
+      for (i=0;i&lt;2;i++) {
+        userInput[i] = Serial.read();
+      }
+      // First byte = servo to move?
+      servo = userInput[0];
+      // Second byte = which position?
+      pos = userInput[1];
+      // Packet error checking and recovery
+      if (pos == 255) { servo = 255; }</code>
+</pre>
+
+<p> </p>
+
+<p>If Arduino gets a complete packet with header, servo, and angle values, it assigns the new position to the appropriate servo. If the value of <code>servo</code> is not between 1 and 4 (or whatever maximum number of servos you specify), the loop exits without assigning any new values. That's it! The Arduino Servo library really makes servo control easy and painless.</p>
+
+<pre><code>      // Assign new position to appropriate servo
+      switch (servo) {
+        case 1:
+          servo1.write(pos);    // move servo1 to 'pos'
+          break;
+        case 2:
+          servo2.write(pos);
+          break;
+        case 3:
+          servo3.write(pos);
+          break;
+        case 4:
+          servo4.write(pos);
+          break;
+    }
+  }</code></pre>
+
+<p> </p>
+
+<h5>
+<a id="whew-were-done" class="anchor" href="#whew-were-done" aria-hidden="true"><span class="octicon octicon-link"></span></a>Whew! We're Done.</h5>
+
+<p>Well, if you've made it this far, congratulations: you're totally insane. I hope the above dissertation helps at least one person better grasp these concepts, since it took me across many web pages and into several late nights to find the answers. Good luck!</p>
+
+<h5>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h5>
+
+<ol>
+<li>Tom Igoe, <em><a href="http://www.oreilly.com/catalog/9780596510510/">Making Things Talk: Practical Methods for Connecting Physical Objects</a></em>
+</li>
+<li>Tom Igoe, "<a href="http://www.tigoe.net/pcomp/code/communication/serial-communication">Serial Communication</a>"</li>
+<li>Tom Igoe, "<a href="http://www.tigoe.net/pcomp/code/communication/interpreting-serial-data-bytes">Interpreting Serial Data</a>"</li>
+<li>Society of Robots, "<a href="http://www.societyofrobots.com/actuators_servos.shtml">Actuators and Servos</a>"</li>
+<li>ITP Physical Computing, "<a href="http://itp.nyu.edu/physcomp/Labs/Servo">Servo Lab</a>"</li>
+<li>ITP Physical Computing, "<a href="http://itp.nyu.edu/physcomp/Labs/Serial">Serial Lab</a>"</li>
+</ol>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
