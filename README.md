@@ -4,7 +4,21 @@ Control four (or more) RC servos with Arduino and Python.
 
 Please read the [associated blog post](https://bws428.github.io/notes/arduino-python-4-axis-servo/) for more details and a full description of the code.
 
-Python 3.5: The use of `venv` is now recommended for creating virtual environments.
+https://medium.com/@boscacci/why-and-how-to-make-a-requirements-txt-f329c685181e
+
+## Installing `pipenv'
+
+OKAY we're going to use `pipenv'
+
+Python 3.5: The use of `venv` is now recommended for creating virtual environments. [Installing packages using pip and virtual environments](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+
+```bash
+python3 -m pip install --user --upgrade pip
+```
+
+```bash
+python3 -m pip --version
+```
 
 ## Installation
 
@@ -26,6 +40,24 @@ To ensure that all of the packages play nice with one another, we'll install a P
 
 ```bash
 python3 -m venv venv
+```
+
+Activate the virtual environment:
+
+```bash
+source venv/bin/activate
+```
+
+With the virtual environment activated, your shell prompt should now look something like this:
+
+```bash
+(venv) username@host:~/path/to/servos $
+```
+
+## Install the Required Packages
+
+```bash
+pip install requirements.txt
 ```
 
 ## Usage
