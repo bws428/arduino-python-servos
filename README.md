@@ -4,7 +4,7 @@ Control four (or more) RC servos with Arduino and Python.
 
 Please read the [associated blog post](https://bws428.github.io/notes/arduino-python-4-axis-servo/) for more details and a full description of the code.
 
-## Installing `pipenv' for managing dependencies
+## Installing `pipenv` for managing dependencies
 
 OKAY we're going to use [pipenv](https://pipenv.pypa.io/en/latest/)
 
