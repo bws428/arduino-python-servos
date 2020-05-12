@@ -22,8 +22,10 @@ cd servos
 
 ## Create a Python 3 Virtual Environment
 
+To ensure that all of the packages play nice with one another, we'll install a Python 3 virtual environment in a directory we'll name `venv`.
+
 ```bash
-python3 -m venv .venv
+python3 -m venv venv
 ```
 
 ## Usage
