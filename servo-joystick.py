@@ -1,49 +1,37 @@
 #!/usr/bin/env python
 
 ###############################################################################
-# Module:   multijoystick.py
+# Module:   servo-joystick.py
 # Created:  2 April 2008
+# Updated:  12 May 2020
 # Author:   Brian D. Wendt
-#   http://principialabs.com/
-# Version:  0.4
-# License:  GPLv3
-#   http://www.fsf.org/licensing/
+# Version:  0.5
+# License:  MIT
 '''
 Provides four-axis joystick servo control from a PC
-using the Arduino "MultipleSerialServoControl" sketch
-and the Python "servo.py" serial abstraction module.
-
-This code was adapted from:
-  http://svn.lee.org/swarm/trunk/mothernode/python/multijoy.py
-
-Dependencies:
-  pyserial - http://pyserial.sourceforge.net/
-  pygame   - http://www.pygame.org/
-  servo    - http://principialabs.com/arduino-python-4-axis-servo-control/
+using the Arduino "servo.pde" sketch and the Python
+"servo.py" serial abstraction module.
 '''
 ###############################################################################
 
-print "\n================================================"
-print "        Arduino/Python Servo Controller"
-print "================================================"
+print("\n======== Arduino/Python Servo Controller ========")
 
 # Import dependent Python modules
 try:
-	import servo
-except:
-	print "\nPlease ensure that 'servo.py' is installed in the current directory.\n"
-	quit()
-try:
 	import pygame.joystick
 except:
-	print "\nPlease install the 'pygame' module <http://www.pygame.org/>.\n"
+	print("\nPlease install dependencies by running `pipenv install`.\n")
 	quit()
+try:
+	import servo
+except:
+    print("There was a problem with the serial connection.")
+    quit()
 
 # Allow for multiple joysticks
 joy = []
 
-# Handle joystick event
-def handleJoyEvent(e):
+def handleJoystickEvent(e):
     # Identify joystick axes and assign events
     if e.type == pygame.JOYAXISMOTION:
         axis = "unknown"
@@ -93,78 +81,78 @@ def handleJoyEvent(e):
     elif e.type == pygame.JOYBUTTONDOWN:
         # Button 1 (trigger)
         if (e.dict['button'] == 0):
-            print "Trigger Down"
+            print("Trigger Down")
             # Set pin 13 LED to HIGH for digital on/off demo
             servo.move(99, 180)
         # Button 2
         if (e.dict['button'] == 1):
-            print "Button 2 Down"
+            print("Button 2 Down")
         # Button 3
         if (e.dict['button'] == 2):
-            print "Button 3 Down"
+            print("Button 3 Down")
         # Button 4
         if (e.dict['button'] == 3):
-            print "Button 4 Down"
+            print("Button 4 Down")
         # Button 5
         if (e.dict['button'] == 4):
-            print "Button 5 Down"
+            print("Button 5 Down")
         # Button 6
         if (e.dict['button'] == 5):
-            print "Button 6 Down"
+            print("Button 6 Down")
             quit()
 
     # Assign actions for Button UP events
     elif e.type == pygame.JOYBUTTONUP:
         # Button 1 (trigger)
         if (e.dict['button'] == 0):
-            print "Trigger Up"
+            print("Trigger Up")
             # Set pin 13 LED to LOW for digital on/off demo
             servo.move(99, 0)
         # Button 2
         if (e.dict['button'] == 1):
-            print "Button 2 Up"
+            print("Button 2 Up")
         # Button 3
         if (e.dict['button'] == 2):
-            print "Button 3 Up"
+            print("Button 3 Up")
         # Button 4
         if (e.dict['button'] == 3):
-            print "Button 4 Up"
+            print("Button 4 Up")
         # Button 5
         if (e.dict['button'] == 4):
-            print "Button 5 Up"
+            print("Button 5 Up")
         # Button 6
         if (e.dict['button'] == 5):
-            print "Button 6 Up"
+            print("Button 6 Up")
 
     # Assign actions for Coolie Hat Switch events
     elif e.type == pygame.JOYHATMOTION:
         if (e.dict['value'][0] == -1):
-            print "Hat Left"
+            print("Hat Left")
             servo.move(4, 0)
         if (e.dict['value'][0] == 1):
-            print "Hat Right"
+            print("Hat Right")
             servo.move(4, 180)
         if (e.dict['value'][1] == -1):
-            print "Hat Down"
+            print("Hat Down")
         if (e.dict['value'][1] == 1):
-            print "Hat Up"
+            print("Hat Up")
         if (e.dict['value'][0] == 0 and e.dict['value'][1] == 0):
-            print "Hat Centered"
+            print("Hat Centered")
             servo.move(4, 90)
 		
     else:
         pass
 
-# Print the joystick position
+# Print(the joystick position
 def output(line, stick):
-    print "Joystick: %d; %s" % (stick, line)
+    print("Joystick: %d; %s").format(stick, line)
 
 # Wait for joystick input
 def joystickControl():
     while True:
         e = pygame.event.wait()
         if (e.type == pygame.JOYAXISMOTION or e.type == pygame.JOYBUTTONDOWN or e.type == pygame.JOYBUTTONUP or e.type == pygame.JOYHATMOTION):
-            handleJoyEvent(e)
+            handleJoystickEvent(e)
 
 # Main method
 def main():
@@ -172,15 +160,15 @@ def main():
     pygame.joystick.init()
     pygame.display.init()
     if not pygame.joystick.get_count():
-        print "\nPlease connect a joystick and run again.\n"
+        print("Please connect a joystick and run again.")
         quit()
-    print "\n%d joystick(s) detected." % pygame.joystick.get_count()
+    print("\n%d joystick(s) detected.").format(pygame.joystick.get_count())
     for i in range(pygame.joystick.get_count()):
         myjoy = pygame.joystick.Joystick(i)
         myjoy.init()
         joy.append(myjoy)
-        print "Joystick %d: " % (i) + joy[i].get_name()
-    print "Depress joystick button 6 to quit.\n"
+        print("Joystick %d: ").format((i) + joy[i].get_name())
+    print("Depress joystick button 6 to quit.\n")
 
     # Run joystick listener loop
     joystickControl()

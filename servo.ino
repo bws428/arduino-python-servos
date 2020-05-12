@@ -1,26 +1,20 @@
 /*
  * ------------------------------
- *   MultipleSerialServoControl
+ *   servo.ino
  * ------------------------------
  *
- * Uses the Arduino Serial library
- *  (http://arduino.cc/en/Reference/Serial)
- * and the Arduino Servo library
- *  (http://arduino.cc/en/Reference/Servo)
- * to control multiple servos from a PC using a USB cable.
+ * Uses the Arduino Serial and Servo libraries to control
+ * multiple servos from a PC using a USB cable.
  *
  * Dependencies:
- *   Arduino 0017 or higher
- *     (http://www.arduino.cc/en/Main/Software)
  *   Python servo.py module
- *     (http://principialabs.com/arduino-python-4-axis-servo-control/)
+ *     (https://github.com/bws428/arduino-python-servos)
  *
  * Created:  23 December 2009
+ * Updated:  12 May 2020
  * Author:   Brian D. Wendt
- *   (http://principialabs.com/)
- * Version:  1.1
- * License:  GPLv3
- *   (http://www.fsf.org/licensing/)
+ * Version:  1.2
+ * License:  MIT
  *
  */
 

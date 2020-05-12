@@ -3,6 +3,7 @@
 ################################################
 # Module:   servo.py
 # Created:  2 April 2008
+# Updated:  12 May 2020
 # Author:   Brian D. Wendt
 # Version:  0.3
 # License:  MIT
@@ -21,10 +22,14 @@ import serial
 #     usbport = '/dev/ttyUSB0'
 #   MacOSX example
 #     usbport = '/dev/tty.usbserial-FTALLOK2'
-usbport = '/dev/ttyUSB0'
+usbport = '/dev/tty'
 
 # Set up serial baud rate
-ser = serial.Serial(usbport, 9600, timeout=1)
+try:
+  ser = serial.Serial(usbport, 9600, timeout=1)
+except:
+  print("\nCannot connect to serial on port:", usbport)
+  exit()
 
 def move(servo, angle):
     '''Moves the specified servo to the supplied angle.
