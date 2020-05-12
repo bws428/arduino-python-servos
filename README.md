@@ -4,16 +4,26 @@ Control four (or more) RC servos with Arduino and Python.
 
 Please read the [associated blog post](https://bws428.github.io/notes/arduino-python-4-axis-servo/) for more details and a full description of the code.
 
+Python 3.5: The use of `venv` is now recommended for creating virtual environments.
+
 ## Installation
+
+Clone this repo onto your local machine as follows:
 
 ```bash
 git clone https://github.com/bws428/arduino-python-servos.git servos
 ```
 
-Then:
+Change into the project directory:
 
 ```bash
 cd servos
+```
+
+## Create a Python 3 Virtual Environment
+
+```bash
+python3 -m venv .venv
 ```
 
 ## Usage
