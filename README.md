@@ -1,4 +1,4 @@
-# Arduino-Python 4-Axis Servo Control
+# Arduino-Python Servos
 
 Control four (or more) RC servos with Arduino and Python.
 
