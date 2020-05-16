@@ -17,7 +17,7 @@ python3 -m pip --version
 ```
 
 ```bash
-pip install --user pipenv
+python3 -m pip install --user pipenv
 ```
 
 ## Installation
